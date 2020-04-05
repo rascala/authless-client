@@ -1,4 +1,4 @@
-# Authless Client • ![](https://github.com/authless/authless-core/workflows/Node.js%20CI/badge.svg) [![Maintainability](https://api.codeclimate.com/v1/badges/26c7d4d131fc816e6ca4/maintainability)](https://codeclimate.com/github/authless/authless-core/maintainability) [![Test Coverage](https://api.codeclimate.com/v1/badges/26c7d4d131fc816e6ca4/test_coverage)](https://codeclimate.com/github/authless/authless-core/test_coverage)
+# Authless Client • ![](https://github.com/authless/authless-client/workflows/Node.js%20CI/badge.svg) [![Maintainability](https://api.codeclimate.com/v1/badges/2c66981166edee3f475d/maintainability)](https://codeclimate.com/github/authless/authless-client/maintainability) [![Test Coverage](https://api.codeclimate.com/v1/badges/2c66981166edee3f475d/test_coverage)](https://codeclimate.com/github/authless/authless-client/test_coverage)
 
 A client for easier access to hosted authless-server. Featuers a low-level
 client to call the authless-server endpoints and a high-level client
