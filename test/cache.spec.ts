@@ -8,10 +8,16 @@ describe('Cache', () => {
       test('returns proper cache instance', () => {
         let cache = new Cache({
           name: 'test',
-          existsFn: () => true,
-          retrieveFn: () => true,
-          storeFn: () => true,
-          removeFn: () => true
+          existsFn: async (url: string) => true,
+          storeFn: (url: string, data: object) => {
+            return {}
+          },
+          retrieveFn: (url: string) => {
+            return {}
+          },
+          removeFn: (url: string) => {
+            return {}
+          },
         })
         expect(cache.name).toBe('test')
         expect(cache.existsFn).toBeInstanceOf(Function)
