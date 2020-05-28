@@ -1,7 +1,8 @@
 import * as VError from 'verror'
 import axios, { AxiosStatic } from 'axios'
 import { Cache } from './cache'
-const debug = require('./debug').extend('low')
+import Debug from './debug'
+const debug = Debug.extend('low')
 
 interface Config {
   uri: any

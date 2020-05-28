@@ -1,9 +1,9 @@
 import * as VError from 'verror'
-// import * as check from 'check-types'
 import { Router, Service } from '@authless/core'
 import { Cache } from './cache'
 import { ClientLowLevel } from './clientLowLevel'
-const debug = require('./debug').extend('high')
+import Debug from './debug'
+const debug = Debug.extend('high')
 
 const convertToRouterURL = (url: string): string => {
   const regex = /http:\/|https:\//gum

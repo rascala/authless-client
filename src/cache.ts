@@ -1,5 +1,6 @@
 import * as VError from 'verror'
-const debug = require('./debug').extend('cache')
+import Debug from './debug'
+const debug = Debug.extend('cache')
 
 interface Config {
   name: string

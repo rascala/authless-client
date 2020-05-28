@@ -1,3 +1,2 @@
-import * as debug from 'debug'
-
-module.exports = debug('authless-client')
+import Debug from 'debug'
+export default Debug('authless-client')
