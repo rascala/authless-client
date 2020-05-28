@@ -1,5 +1,6 @@
 import * as VError from 'verror'
 import Debug from './debug'
+import { Debugger } from 'debug'
 const debug = Debug.extend('cache')
 
 interface Config {
@@ -11,7 +12,7 @@ interface Config {
 }
 class Cache {
   name: string
-  debug: any
+  debug: Debugger
   existsFn: (url: string) => Promise<boolean>
   storeFn: (url: string, data: object) => object
   retrieveFn: (url: string) => object
