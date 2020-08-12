@@ -32,14 +32,18 @@ class Client {
     return true
   }
 
-  // lowLevelClient: lowLevelClient instance
-  // retries: how many times it should be retried
-  // router: Router
-  // cache: {
-  //  existsFn: a function that checks if it exists (takes url as input)
-  //  retrieveFn: a function that retrieves from the cache (takes url as input)
-  //  removeFn: a function that removes it from the cache (takes url as input)
-  // }
+  /**
+   * lowLevelClient: lowLevelClient instance
+   *
+   * @remarks
+   * retries: how many times it should be retried
+   * router: Router
+   * cache: {
+   *  existsFn: a function that checks if it exists (takes url as input)
+   *  retrieveFn: a function that retrieves from the cache (takes url as input)
+   *  removeFn: a function that removes it from the cache (takes url as input)
+   * }
+  */
   constructor (config: Config) {
     try {
       if(Client.isValidConfig(config)) {
@@ -78,34 +82,35 @@ class Client {
     // eslint-disable-next-line no-warning-comments
     // TODO: refactor together with low-level into retry functions
     try {
-      try {
-        data = await this.lowLevelClient.url(params)
-        if (data === null || typeof data === 'boolean') {
-          debug.extend('url').extend('error')(`failed to execute url; data was null or boolean: retry count: ${retryCounter}`)
-        } else if (typeof this.cache !== 'undefined') {
-          await this.cache.write(params.url, data)
-        }
-      } catch (e) {
-        // log the error
-        console.log(e)
-        if (typeof this.lowLevelClient.cache !== 'undefined') {
-          await this.lowLevelClient.cache.remove(params.url)
-        }
-        if (retryCounter < this.retries) {
-          debug.extend('url').extend('error')(`retry/invalid lowLevel data: ${e.message as string}`)
-          return await this.url(params, retryCounter + 1)
-        }
-        debug.extend('url').extend('error')(`retried ${this.retries} times; its not working`)
-        throw new VError(e, `failed to execute url; retried ${this.retries} times`)
+      data = await this.lowLevelClient.url(params)
+
+      if (data === null || typeof data === 'boolean') {
+        // check if an object was returned
+        debug.extend('url').extend('error')(`failed to execute url; data was null or boolean: retry count: ${retryCounter}`)
+        // throw error and let catch block handle whether to continue or not
+        throw new Error('Fetching response')
+      } else if (typeof this.cache !== 'undefined') {
+        // if an object was returned, save it to cache
+        await this.cache.write(params.url, data)
+        return data
       }
-      return data
     } catch (e) {
+      // if we are within max retries allowed, call self recursively
       if (retryCounter < this.retries) {
         debug.extend('url').extend('error')(`retry/${retryCounter + 1}: ${e.message as string}`)
         return await this.url(params, retryCounter + 1)
       }
+
       debug.extend('url').extend('error')(`retried ${this.retries} times; its not working`)
-      throw e
+      // remove the data from cache.
+      // it will be added when we can successfully get the data from authless-server
+      if (typeof this.lowLevelClient.cache !== 'undefined') {
+        await this.lowLevelClient.cache.remove(params.url)
+      }
+
+      debug.extend('url').extend('error')(`retried ${this.retries} times; its not working`)
+      // if we have extinguished max retries allowed, throw an error
+      throw new VError(e, `failed to execute url; retried ${this.retries} times`)
     }
   }
 }
