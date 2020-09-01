@@ -50,7 +50,7 @@ class Client {
       }
       Object.assign(this, config)
     } catch (e) {
-      throw new VError(e, 'failed to initialize ClientLowLevel')
+      throw new VError(e, 'failed to initialize Client')
     }
   }
 
