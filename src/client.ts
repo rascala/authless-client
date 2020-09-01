@@ -63,12 +63,15 @@ class Client {
         .then(response => response.data)
       return data
     } catch (e) {
+      // if we are within max retries allowed, call self recursively
       if (retryCounter < this.retries) {
         debug.extend('url').extend('error')(`retry/${retryCounter + 1}: ${e.message as string}`)
         return this.url(params, retryCounter + 1)
       }
+
       debug.extend('url').extend('error')(`retried ${this.retries} times; its not working`)
-      throw e
+      // if we have extinguished max retries allowed, throw an error
+      throw new VError(e, `failed to execute url; retried ${this.retries} times`)
     }
   }
 
