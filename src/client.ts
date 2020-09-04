@@ -5,8 +5,9 @@ import Debug from './debug'
 const debug = Debug.extend('client')
 
 interface Config {
-  uri: any
-  retries: any
+  serverUri: string
+  retries: number
+  axios?: AxiosStatic
 }
 
 interface UrlParams {
@@ -15,22 +16,15 @@ interface UrlParams {
   responseFormat?: string
 }
 
-interface SearchParams {
-  q: string
-  responseFormat?: string
-}
-
-type ResponseData = object
-
 class Client {
 
-  uri: string
+  serverUri: string
   retries: number
   axios: AxiosStatic
 
-  static isValidClient (x: any): x is Client {
+  static isValidConfig (x: any): x is Config {
     if(!(x instanceof Object) || x === null) throw new Error('config must be a javascript object')
-    if(typeof x.uri !== 'string') throw new Error('config.uri must be a string')
+    if(typeof x.serverUri !== 'string') throw new Error('config.serverUri must be a string')
     if(typeof x.retries !== 'number') throw new Error('config.retries must be a number')
     return true
   }
@@ -38,15 +32,15 @@ class Client {
   /**
    *
    * @param config.retries - how many times it should be retried
-   * @param config.uri: authless server uri
+   * @param config.serverUri: authless server uri
    *
  */
   constructor (config: Config) {
     try {
-      if(Client.isValidClient(config)) {
-        this.uri = config.uri
+      if(Client.isValidConfig(config)) {
+        this.serverUri = config.serverUri
         this.retries = config.retries
-        this.axios = axios
+        this.axios = config.axios ?? axios
       }
       Object.assign(this, config)
     } catch (e) {
@@ -59,7 +53,7 @@ class Client {
     params.responseFormat = params.responseFormat ?? 'json'
 
     try {
-      const data = await this.axios.get(`${this.uri}/url`, {params})
+      const data = await this.axios.get(`${this.serverUri}/url`, {params})
         .then(response => response.data)
       return data
     } catch (e) {
@@ -75,13 +69,6 @@ class Client {
     }
   }
 
-  async search (params: SearchParams): Promise<ResponseData> {
-    debug.extend('search')(params.q)
-    params.responseFormat = params.responseFormat ?? 'json'
-
-    return await this.axios.get(`${this.uri}/search`, {params})
-      .then(response => response.data)
-  }
 }
 
 export { Client }
